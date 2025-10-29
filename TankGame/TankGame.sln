@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.14.36414.22 d17.14
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "Test", "Test\Test.pyproj", "{F99C1716-AB41-4AE8-9CF1-2CAB45799397}"
+Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "TankGame", "TankGame\TankGame.pyproj", "{4D80B31E-74B8-49D5-AB8E-315C26118007}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,13 +11,13 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{F99C1716-AB41-4AE8-9CF1-2CAB45799397}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F99C1716-AB41-4AE8-9CF1-2CAB45799397}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4D80B31E-74B8-49D5-AB8E-315C26118007}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4D80B31E-74B8-49D5-AB8E-315C26118007}.Release|Any CPU.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {EEEECC17-E398-4408-A924-6035AB658775}
+		SolutionGuid = {E9FC5FBD-8FA7-41BE-AD5B-2DE02B7DE454}
 	EndGlobalSection
 EndGlobal
