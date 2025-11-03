@@ -9,7 +9,6 @@ screenParam = [1280, 720]
 screen = pygame.display.set_mode((screenParam[0], screenParam[1]))
 ui_manager = pygame_gui.UIManager((screenParam[0], screenParam[1]))
 clock = pygame.time.Clock()
-CannonballShotDuration = 0
 
 running = True
 pos = [0,0]
@@ -22,29 +21,32 @@ GRAY = (200, 200, 200)
 
 # Create a slider
 sliderPower = pygame_gui.elements.UIHorizontalSlider(
-    relative_rect=pygame.Rect((screenParam[0] * 0.1, screenParam[1] * 0.9), (screenParam[0] * 0.2, screenParam[1] * 0.025)),
-    start_value=5,
+    relative_rect=pygame.Rect((screenParam[0] * 0.1, screenParam[1] * 0.9625), (screenParam[0] * 0.2, screenParam[1] * 0.025)),
+    start_value=10,
     value_range=(0, 100),
     manager = ui_manager
 )
 
 sliderAngle = pygame_gui.elements.UIHorizontalSlider(
-    relative_rect=pygame.Rect((screenParam[0] * 0.4, screenParam[1] * 0.9), (screenParam[0] * 0.2, screenParam[1] * 0.025)),
+    relative_rect=pygame.Rect((screenParam[0] * 0.4, screenParam[1] * 0.9625), (screenParam[0] * 0.2, screenParam[1] * 0.025)),
     start_value=50,
     value_range=(0, 180),
     manager = ui_manager
 )
 
 button = pygame_gui.elements.UIButton(
-    relative_rect=pygame.Rect((screenParam[0] * 0.7, screenParam[1] * 0.9), (screenParam[0] * 0.2, screenParam[1] * 0.05)),
+    relative_rect=pygame.Rect((screenParam[0] * 0.7, screenParam[1] * 0.95), (screenParam[0] * 0.2, screenParam[1] * 0.05)),
     text="Shoot",
     manager=ui_manager
 )
+levelGeometry = [(0,screenParam[1] * 0.8), (screenParam[0] * 0.3, screenParam[1] * 0.8),
+                     (screenParam[0]* 0.5, screenParam[1] * 0.85), (screenParam[0]* 0.8, screenParam[1] * 0.75),
+                     (screenParam[0], screenParam[1] * 0.75), (screenParam[0],screenParam[1] * 0.95),
+                     (0,screenParam[1] * 0.95)]
 
-power = float(sliderPower.get_current_value())
-angle = float(sliderAngle.get_current_value())
+cannonball = Cannonball.Cannonball(levelGeometry, 5)
 
-cannonball = Cannonball.Cannonball()
+tankDetails = [screenParam[0] * 0.1, screenParam[1] * 0.79, 20, 20]
 
 
 while running:
@@ -58,40 +60,33 @@ while running:
 
         if event.type == pygame_gui.UI_BUTTON_PRESSED:
             if event.ui_element == button:
-                cannonball.Shoot(float(sliderAngle.get_current_value()), float(sliderPower.get_current_value()), screenParam[0] * 0.1, screenParam[1] * 0.8)
+                cannonball.Shoot(float(sliderAngle.get_current_value()), float(sliderPower.get_current_value()), tankDetails[0], tankDetails[1])
      # Update the UI
     ui_manager.update(1/frameLimit)  # Delta time (e.g., 1/60 for 60 FPS)
     
 
     # fill the screen with a color to wipe away anything from last frame
     screen.fill("white")
-    ui_manager.draw_ui(screen)
-    #if pos[0] < screenParam[0] or pos[1] < screenParam[1]:
-    #    pos[0] = pos[0] + int(slider.get_current_value())
-    #    pos[1] = pos[1] + int(slider.get_current_value())
-    #else:
-    #    pos[0] = 0
-    #    pos[1] = 0
+    
 
 
 
     # RENDER YOUR GAME HERE
-    points = [(0,screenParam[1] * 0.3), (screenParam[0], screenParam[1] * 0.3), (screenParam[0], 0), (0,0)]
-    #pygame.draw.polygon(screen, (0,0,0), points, 0)
+    
+    
 
-    #currentLocation = Cannonball.calculatePointInArc(angle, power, CannonballShotDuration, screenParam[0] * 0.1, screenParam[1] * 0.8 )
+    pygame.draw.polygon(screen, (0,60,128), levelGeometry, 0)
 
-    #if currentLocation[0] > screenParam[0] or currentLocation[1] > screenParam[1] or currentLocation[0] < 0 or currentLocation[1] < 0:
-    #    CannonballShotDuration = 0
-    #    power = float(sliderPower.get_current_value())
-    #    angle = float(sliderAngle.get_current_value())
-    #    currentLocation = Cannonball.calculatePointInArc(angle, power, CannonballShotDuration, screenParam[0] * 0.1, screenParam[1] * 0.8 )
-
+    pygame.draw.rect(screen, (0,0,0), (tankDetails[0], tankDetails[1], tankDetails[2],tankDetails[3]))
+    
     if cannonball.GetActive():
         currentLocation = cannonball.CalculatePointInArc(clock.get_time())
-        pygame.draw.circle(screen, (0,0,0), currentLocation, 10)
+        pygame.draw.circle(screen, (128,75,0), currentLocation, cannonball.GetRadius())
 
-
+    #Draw UI stuff
+    points = [(0,screenParam[1] * 0.95), (screenParam[0], screenParam[1] * 0.95), (screenParam[0], screenParam[1]), (0,screenParam[1])]
+    pygame.draw.polygon(screen, (0,0,0), points, 0)
+    ui_manager.draw_ui(screen)
 
     
 
