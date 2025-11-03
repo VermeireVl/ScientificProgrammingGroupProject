@@ -35,11 +35,16 @@ sliderAngle = pygame_gui.elements.UIHorizontalSlider(
     manager = ui_manager
 )
 
+button = pygame_gui.elements.UIButton(
+    relative_rect=pygame.Rect((screenParam[0] * 0.7, screenParam[1] * 0.9), (screenParam[0] * 0.2, screenParam[1] * 0.05)),
+    text="Shoot",
+    manager=ui_manager
+)
 
 power = float(sliderPower.get_current_value())
 angle = float(sliderAngle.get_current_value())
 
-
+cannonball = Cannonball.Cannonball()
 
 
 while running:
@@ -51,6 +56,9 @@ while running:
         
         ui_manager.process_events(event)
 
+        if event.type == pygame_gui.UI_BUTTON_PRESSED:
+            if event.ui_element == button:
+                cannonball.Shoot(float(sliderAngle.get_current_value()), float(sliderPower.get_current_value()), screenParam[0] * 0.1, screenParam[1] * 0.8)
      # Update the UI
     ui_manager.update(1/frameLimit)  # Delta time (e.g., 1/60 for 60 FPS)
     
@@ -71,18 +79,20 @@ while running:
     points = [(0,screenParam[1] * 0.3), (screenParam[0], screenParam[1] * 0.3), (screenParam[0], 0), (0,0)]
     #pygame.draw.polygon(screen, (0,0,0), points, 0)
 
-    currentLocation = Cannonball.calculatePointInArc(angle, power, CannonballShotDuration, screenParam[0] * 0.1, screenParam[1] * 0.8 )
+    #currentLocation = Cannonball.calculatePointInArc(angle, power, CannonballShotDuration, screenParam[0] * 0.1, screenParam[1] * 0.8 )
 
-    if currentLocation[0] > screenParam[0] or currentLocation[1] > screenParam[1] or currentLocation[0] < 0 or currentLocation[1] < 0:
-        CannonballShotDuration = 0
-        power = float(sliderPower.get_current_value())
-        angle = float(sliderAngle.get_current_value())
-        currentLocation = Cannonball.calculatePointInArc(angle, power, CannonballShotDuration, screenParam[0] * 0.1, screenParam[1] * 0.8 )
+    #if currentLocation[0] > screenParam[0] or currentLocation[1] > screenParam[1] or currentLocation[0] < 0 or currentLocation[1] < 0:
+    #    CannonballShotDuration = 0
+    #    power = float(sliderPower.get_current_value())
+    #    angle = float(sliderAngle.get_current_value())
+    #    currentLocation = Cannonball.calculatePointInArc(angle, power, CannonballShotDuration, screenParam[0] * 0.1, screenParam[1] * 0.8 )
+
+    if cannonball.GetActive():
+        currentLocation = cannonball.CalculatePointInArc(clock.get_time())
+        pygame.draw.circle(screen, (0,0,0), currentLocation, 10)
 
 
-    pygame.draw.circle(screen, (0,0,0), currentLocation, 10)
 
-    CannonballShotDuration += clock.get_time() / 1000
     
 
     # flip() the display to put your work on screen
