@@ -23,6 +23,7 @@
   <ItemGroup>
     <Compile Include="Cannonball.py" />
     <Compile Include="remnants.py" />
+    <Compile Include="Tank.py" />
     <Compile Include="TankGame.py" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
