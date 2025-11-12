@@ -1,0 +1,39 @@
+{
+  "games": [
+    {
+      "id": 1,
+      "shots": 5,
+      "misses": 2,
+      "match_time": 62.3,
+      "finished": true
+    },
+    {
+      "id": 2,
+      "shots": 3,
+      "misses": 1,
+      "match_time": 47.8,
+      "finished": false
+    },
+    {
+      "id": 3,
+      "shots": 8,
+      "misses": 3,
+      "match_time": 90.0,
+      "finished": true
+    },
+    {
+      "id": 4,
+      "shots": 10,
+      "misses": 4,
+      "match_time": 75.5,
+      "finished": true
+    },
+    {
+      "id": 5,
+      "shots": 6,
+      "misses": 2,
+      "match_time": 55.0,
+      "finished": false
+    }
+  ]
+}
