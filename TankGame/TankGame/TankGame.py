@@ -1,5 +1,6 @@
 import Cannonball
 import Tank
+import DataAnalysis
 import pygame
 
 import pygame_gui
@@ -72,13 +73,19 @@ tankList = [tank0, tank1]
 
 cannonball = Cannonball.Cannonball(levelGeometry, 5, screenParam, tankList)
 
+dataAnaliser = DataAnalysis.DataAnalysis()
+dataAnaliser.dataget()
+#dataAnaliser.linreg()
+#dataAnaliser.scatter()
 
-
+dataAnaliser.StartNewLevel()
 while running:
     # poll for events
     # pygame.QUIT event means the user clicked X to close your window
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
+            dataAnaliser.EndLevel()
+            dataAnaliser.EndGame()
             running = False
         
         ui_manager.process_events(event)
@@ -90,7 +97,9 @@ while running:
 
         if event.type == pygame_gui.UI_BUTTON_PRESSED:
             if event.ui_element == button:
-                cannonball.Shoot(float(sliderAngle.get_current_value()), float(sliderPower.get_current_value()))
+                if not cannonball.active:
+                    dataAnaliser.AddShot()
+                    cannonball.Shoot(float(sliderAngle.get_current_value()), float(sliderPower.get_current_value()))
      # Update the UI
     ui_manager.update(1/frameLimit)  # Delta time (e.g., 1/60 for 60 FPS)
     
@@ -111,7 +120,10 @@ while running:
     
     if cannonball.GetActive():
         if cannonball.UpdatePointInArc(clock.get_time()):
-            pygame.draw.circle(screen, (128,75,0), cannonball.GetCurrentPosition(), cannonball.GetRadius())
+            dataAnaliser.AddHit()
+            dataAnaliser.EndLevel()
+            dataAnaliser.StartNewLevel()
+        pygame.draw.circle(screen, (128,75,0), cannonball.GetCurrentPosition(), cannonball.GetRadius())
         #else:
 
 

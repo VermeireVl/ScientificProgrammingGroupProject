@@ -11,14 +11,13 @@ class Cannonball:
         self.tankList = tankList
 
     def Shoot(self, angle: float, power: float, start_x: float = 0, start_y: float = 0):
-        if not self.active:
-            self.theta = math.radians(angle)
-            self.power = power
-            self.start_x = self.tankList[self.currentIndex].x
-            self.start_y = self.tankList[self.currentIndex].y
-            self.center = (self.start_x, self.start_y)
-            self.time = 0
-            self.active = True
+        self.theta = math.radians(angle)
+        self.power = power
+        self.start_x = self.tankList[self.currentIndex].x
+        self.start_y = self.tankList[self.currentIndex].y
+        self.center = (self.start_x, self.start_y)
+        self.time = 0
+        self.active = True
         
     def GetRadius(self) -> float:
         return self.radius
@@ -47,6 +46,7 @@ class Cannonball:
                     print("hit index: " + str(index))
                     if self.currentIndex >= len(self.tankList):
                         self.currentIndex = 0
+                    return True
 
         if self.PointInPolygon() or self.CircleEdgeCollision(self.levelGeometry) or self.InScreen():
             self.active = False
@@ -56,7 +56,7 @@ class Cannonball:
             return False
 
         
-        return True
+        return False
 
     def GetCurrentPosition(self) -> tuple[float, float]:
         return self.center
