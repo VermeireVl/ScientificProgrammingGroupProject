@@ -1,18 +1,24 @@
+from logging import _levelToName
 import math
 
 class Cannonball:
-    def __init__(self, levelGeometry, radius):
+    def __init__(self, levelGeometry, radius, screen, tankList):
         self.active = False
         self.levelGeometry = levelGeometry
         self.radius = radius
+        self.screen = screen
+        self.currentIndex = 0
+        self.tankList = tankList
 
     def Shoot(self, angle: float, power: float, start_x: float = 0, start_y: float = 0):
-        self.theta = math.radians(angle)
-        self.power = power
-        self.start_x = start_x
-        self.start_y = start_y
-        self.time = 0
-        self.active = True
+        if not self.active:
+            self.theta = math.radians(angle)
+            self.power = power
+            self.start_x = self.tankList[self.currentIndex].x
+            self.start_y = self.tankList[self.currentIndex].y
+            self.center = (self.start_x, self.start_y)
+            self.time = 0
+            self.active = True
         
     def GetRadius(self) -> float:
         return self.radius
@@ -20,15 +26,42 @@ class Cannonball:
     def GetActive(self) -> bool:
         return self.active
 
-    def CalculatePointInArc(self, changedTime: float, gravity: float = 9.81) -> tuple[float, float]:
+
+    def UpdatePointInArc(self, changedTime: float, gravity: float = 9.81) -> bool:
         # Calculate x and y positions
         self.time += 3*changedTime /1000
         x = self.start_x + self.power * math.cos(self.theta) * self.time
         y = self.start_y - (self.power * math.sin(self.theta) * self.time - 0.5 * gravity * self.time**2)
+        self.center = (x, y)
 
-        return (x, y)
+        for index in range(len(self.tankList)):
+            if index == self.currentIndex:
+                continue
+            else:
+                tankPoints = [[self.tankList[index].x, self.tankList[index].y], [self.tankList[index].x + self.tankList[index].width, self.tankList[index].y],
+                              [self.tankList[index].x + self.tankList[index].width, self.tankList[index].y + self.tankList[index].height],
+                              [self.tankList[index].x, self.tankList[index].y + self.tankList[index].height]]
+                if self.CircleEdgeCollision(tankPoints):
+                    self.active = False
+                    self.currentIndex += 1
+                    print("hit index: " + str(index))
+                    if self.currentIndex >= len(self.tankList):
+                        self.currentIndex = 0
 
-    def point_in_polygon(self):
+        if self.PointInPolygon() or self.CircleEdgeCollision(self.levelGeometry) or self.InScreen():
+            self.active = False
+            self.currentIndex += 1
+            if self.currentIndex >= len(self.tankList):
+                    self.currentIndex = 0
+            return False
+
+        
+        return True
+
+    def GetCurrentPosition(self) -> tuple[float, float]:
+        return self.center
+
+    def PointInPolygon(self) -> bool:
         n = len(self.levelGeometry)
         inside = False
         for i in range(n):
@@ -43,48 +76,49 @@ class Cannonball:
                             inside = not inside
         return inside
 
-    def circle_edge_collision(self, circle_center, circle_radius, edge_start, edge_end):
-        """
-        Check if a circle intersects a line segment (edge).
+    def CircleEdgeCollision(self, collisionPoints) -> bool:
+        collision = False
+        
+        for index in range(len(collisionPoints)):
+            stopIndex = index + 1   
+            if index == len(collisionPoints) - 1:
+                stopIndex = 0
+            # Vector from edge_start to edge_end
+            edge_vector = (collisionPoints[stopIndex][0] - collisionPoints[index][0], collisionPoints[stopIndex][1] - collisionPoints[index][1])
+            # Vector from edge_start to circle_center
+            circle_vector = (self.center[0] - collisionPoints[index][0], self.center[1] - collisionPoints[index][1])
 
-        Args:
-            circle_center: (x, y) coordinates of the circle's center.
-            circle_radius: Radius of the circle.
-            edge_start: (x, y) coordinates of the edge's start point.
-            edge_end: (x, y) coordinates of the edge's end point.
+            # Length of the edge
+            edge_length_squared = edge_vector[0]**2 + edge_vector[1]**2
 
-        Returns:
-            bool: True if the circle intersects the edge, False otherwise.
-        """
-        # Vector from edge_start to edge_end
-        edge_vector = (edge_end[0] - edge_start[0], edge_end[1] - edge_start[1])
-        # Vector from edge_start to circle_center
-        circle_vector = (circle_center[0] - edge_start[0], circle_center[1] - edge_start[1])
+            # Projection of circle_vector onto edge_vector
+            if edge_length_squared == 0:
+                # Edge is a point
+                distance_squared = (self.center[0] - collisionPoints[index][0])**2 + (self.center[1] - collisionPoints[index][1])**2
+                return distance_squared <= self.radius**2
 
-        # Length of the edge
-        edge_length_squared = edge_vector[0]**2 + edge_vector[1]**2
+            projection = (circle_vector[0] * edge_vector[0] + circle_vector[1] * edge_vector[1]) / edge_length_squared
 
-        # Projection of circle_vector onto edge_vector
-        if edge_length_squared == 0:
-            # Edge is a point
-            distance_squared = (circle_center[0] - edge_start[0])**2 + (circle_center[1] - edge_start[1])**2
-            return distance_squared <= circle_radius**2
+            # Closest point on the edge to the circle's center
+            if projection < 0:
+                closest_point = collisionPoints[index]
+            elif projection > 1:
+                closest_point = collisionPoints[stopIndex]
+            else:
+                closest_point = (
+                    collisionPoints[index][0] + projection * edge_vector[0],
+                    collisionPoints[index][1] + projection * edge_vector[1]
+                )
 
-        projection = (circle_vector[0] * edge_vector[0] + circle_vector[1] * edge_vector[1]) / edge_length_squared
+            # Distance from circle's center to closest point on the edge
+            distance_squared = (self.center[0] - closest_point[0])**2 + (self.center[1] - closest_point[1])**2
+            if distance_squared <= self.radius**2:
+                collision = True
+                break
+            # Check if the distance is less than or equal to the circle's radius
+        return collision
 
-        # Closest point on the edge to the circle's center
-        if projection < 0:
-            closest_point = edge_start
-        elif projection > 1:
-            closest_point = edge_end
-        else:
-            closest_point = (
-                edge_start[0] + projection * edge_vector[0],
-                edge_start[1] + projection * edge_vector[1]
-            )
-
-        # Distance from circle's center to closest point on the edge
-        distance_squared = (circle_center[0] - closest_point[0])**2 + (circle_center[1] - closest_point[1])**2
-
-        # Check if the distance is less than or equal to the circle's radius
-        return distance_squared <= circle_radius**2
+    def InScreen(self) -> bool:
+        if self.center[0] < 0 or self.center[0] > self.screen[0] or self.center[1] < 0 or self.center[1] > self.screen[1]:
+            return True
+        return False
