@@ -22,6 +22,8 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Cannonball.py" />
+    <Compile Include="DataAnalysis.py" />
+    <Compile Include="projectile.py" />
     <Compile Include="remnants.py" />
     <Compile Include="Tank.py" />
     <Compile Include="TankGame.py" />

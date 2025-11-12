@@ -7,83 +7,107 @@ import matplotlib.pyplot as plt
 import numpy as np
 #pip install scipy
 from scipy.stats import linregress
+from datetime import datetime
 
-# Initialize Pygame
-py.init()
+#import os
+#os.chdir(r"C:\Users\timei\Downloads\VScode\GitHub\ScientificProgrammingGroupProject\TankGame\TankGame")
+class DataAnalysis:
+    def __init__(self):
+        self.currentLevels = []
 
-# Screen setup
-WIDTH, HEIGHT = 800, 600
-screen = py.display.set_mode((WIDTH, HEIGHT))
-py.display.set_caption("Data Analysis")
-
-import os
-os.chdir(r"C:\Users\timei\Downloads\VScode\GitHub\ScientificProgrammingGroupProject\TankGame\TankGame")
-
-def dataget(): 
-    game_ids = []
-    avg_accuracies = []
-
-    with open(r"data.json", "r", encoding='utf-8') as file:
-        data = json.load(file)
-    finished_games = [game for game in data["games"] if game["finished"]] #so we have complete data
-
-    for game in finished_games:
-        levels = game["levels"]
-
-        total_shots = sum(level["shots"] for level in levels)
-        total_misses = sum(level["misses"] for level in levels)
-        accuracy = (total_shots - total_misses) / total_shots if total_shots > 0 else 0 #shouldn't be 0 but just incase
-
-        game_ids.append(game["id"])
-        avg_accuracies.append(accuracy)
-
-    return game_ids, avg_accuracies, finished_games
+    class Level:
+        def __init__(self, levelId):
+            self.levelId = levelId
+            self.shots = 0
+            self.misses = 0
+            self.startTime = datetime.now()
+            self.match_time = 0
 
 
-dataget()
+    def StartNewLevel(self):
+        self.currentLevels.append(self.Level(len(self.currentLevels)))
 
-def linreg(game_ids, avg_accuracies): #linear regression of accuracy vs shots
-    Accuracy_percent = [a * 100 for a in avg_accuracies]
-    plt.scatter(game_ids, Accuracy_percent, color='blue')
+    def AddShot(self):
+        self.currentLevels[len(self.currentLevels) - 1].shots += 1
+        self.currentLevels[len(self.currentLevels) - 1].misses += 1
 
-    slope, intercept, r_value, p_value, std_err = linregress(game_ids, avg_accuracies)
-    regression_line = [(slope * x + intercept) * 100 for x in game_ids]
-    slope, intercept = np.polyfit(game_ids, avg_accuracies, 1)
+    def AddHit(self):
+        self.currentLevels[len(self.currentLevels) - 1].misses -= 1
 
-    plt.plot(game_ids, regression_line, color='red', label=f'Accuracy = {slope * 100:.2f} * GameID + {intercept * 100:.2f}\nR = {r_value:.2f}')
-
-    plt.title("Game # vs Accuracy (%)")
-    plt.xlabel("Game #")
-    plt.ylabel("Accuracy (%)")
-    plt.legend()
-    plt.grid(True)
-    plt.show()
+    def EndLevel(self):
+        self.currentLevels[len(self.currentLevels) - 1].endTime = datetime.now()
 
 
-def scatter(finished_games): #scatter plot of how many rounds per level there were. use different colors per game id
-    color_cycle = plt.cm.get_cmap('tab10') #gets switching colors
-    n_games = len(finished_games)
-    for i, game in enumerate(finished_games):
-        levels = game["levels"]
-        level_numbers = list(range(1, len(levels) + 1))
-        rounds_per_level = [level["shots"] for level in levels]
+    def EndGame(self):
+        self.finished_games[len(self.finished_games) - 1]['id']
+        entries = []
+        for currentLevel in self.currentLevels:
+            entries.append({"level": currentLevel.levelId, "shots": currentLevel.shots, "missis": currentLevel.misses, "match_time": (currentLevel.endTime - currentLevel.startTime).seconds})
+        newGame = {
+            "id": self.finished_games[len(self.finished_games) - 1]['id'] + 1,
+            "finished": True,
+            "levels":entries
+            }
+        with open(r"data.json", "r", encoding='utf-8') as file:
+            data = json.load(file)
+            data["games"].append(newGame)
+        with open(r"data.json", "w") as file:
+            json.dump(data, file, indent=4)
 
-        color = color_cycle(i % n_games) #colors
-        plt.scatter(level_numbers, rounds_per_level, color=color, s=80),# label=f'Game {game["id"]}')
+
+    def dataget(self): 
+        self.game_ids = []
+        self.avg_accuracies = []
+
+        with open(r"data.json", "r", encoding='utf-8') as file:
+            data = json.load(file)
+        self.finished_games = [game for game in data["games"] if game["finished"]] #so we have complete data
+
+        for game in self.finished_games:
+            levels = game["levels"]
+
+            total_shots = sum(level["shots"] for level in levels)
+            total_misses = sum(level["misses"] for level in levels)
+            self.accuracy = (total_shots - total_misses) / total_shots if total_shots > 0 else 0 #shouldn't be 0 but just incase
+
+            self.game_ids.append(game["id"])
+            self.avg_accuracies.append(self.accuracy)
 
 
-    plt.xlabel("Level Number")
-    plt.ylabel("Rounds Played (Shots)")
-    plt.title("Rounds per Level for Each Game ID")
-    #plt.xticks(range(1, max(len(game["levels"]) for game in finished_games) + 1))
-    plt.legend()
-    plt.grid(True)
-    plt.show()
+    def linreg(self): #linear regression of accuracy vs shots
+        Accuracy_percent = [a * 100 for a in self.avg_accuracies]
+        plt.scatter(self.game_ids, Accuracy_percent, color='blue')
 
-game_ids, avg_accuracies, finished_games = dataget()
-linreg(game_ids, avg_accuracies)
-scatter(finished_games)
+        slope, intercept, r_value, p_value, std_err = linregress(self.game_ids, self.avg_accuracies)
+        regression_line = [(slope * x + intercept) * 100 for x in self.game_ids]
+        slope, intercept = np.polyfit(self.game_ids, self.avg_accuracies, 1)
 
-for event in py.event.get():
-    if event.type == py.QUIT:
-        running = False
+        plt.plot(self.game_ids, regression_line, color='red', label=f'Accuracy = {slope * 100:.2f} * GameID + {intercept * 100:.2f}\nR = {r_value:.2f}')
+
+        plt.title("Game # vs Accuracy (%)")
+        plt.xlabel("Game #")
+        plt.ylabel("Accuracy (%)")
+        plt.legend()
+        plt.grid(True)
+        plt.show()
+
+
+    def scatter(self): #scatter plot of how many rounds per level there were. use different colors per game id
+        color_cycle = plt.cm.get_cmap('tab10') #gets switching colors
+        n_games = len(self.finished_games)
+        for i, game in enumerate(self.finished_games):
+            levels = game["levels"]
+            level_numbers = list(range(1, len(levels) + 1))
+            rounds_per_level = [level["shots"] for level in levels]
+
+            color = color_cycle(i % n_games) #colors
+            plt.scatter(level_numbers, rounds_per_level, color=color, s=80),# label=f'Game {game["id"]}')
+
+
+        plt.xlabel("Level Number")
+        plt.ylabel("Rounds Played (Shots)")
+        plt.title("Rounds per Level for Each Game ID")
+        #plt.xticks(range(1, max(len(game["levels"]) for game in finished_games) + 1))
+        plt.legend()
+        plt.grid(True)
+        plt.show()
