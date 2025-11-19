@@ -12,8 +12,12 @@ from datetime import datetime
 #import os
 #os.chdir(r"C:\Users\timei\Downloads\VScode\GitHub\ScientificProgrammingGroupProject\TankGame\TankGame")
 class DataAnalysis:
-    def __init__(self):
+    def __init__(self, width, height):
         self.currentLevels = []
+        #self.dpi = plt.gcf().get_dpi()
+        #self.width_inches = width / self.dpi
+        #self.height_inches = height / self.dpi
+        #plt.figure(figsize=(self.width_inches, self.height_inches), dpi=self.dpi)
 
     class Level:
         def __init__(self, levelId):
@@ -39,20 +43,21 @@ class DataAnalysis:
 
 
     def EndGame(self):
-        self.finished_games[len(self.finished_games) - 1]['id']
-        entries = []
-        for currentLevel in self.currentLevels:
-            entries.append({"level": currentLevel.levelId, "shots": currentLevel.shots, "missis": currentLevel.misses, "match_time": (currentLevel.endTime - currentLevel.startTime).seconds})
-        newGame = {
-            "id": self.finished_games[len(self.finished_games) - 1]['id'] + 1,
-            "finished": True,
-            "levels":entries
-            }
-        with open(r"data.json", "r", encoding='utf-8') as file:
-            data = json.load(file)
-            data["games"].append(newGame)
-        with open(r"data.json", "w") as file:
-            json.dump(data, file, indent=4)
+        if len(self.currentLevels) > 1:
+            self.finished_games[len(self.finished_games) - 1]['id']
+            entries = []
+            for index in range(len(self.currentLevels) -1 ):
+                entries.append({"level": self.currentLevels[index].levelId, "shots": self.currentLevels[index].shots, "misses": self.currentLevels[index].misses, "match_time": (self.currentLevels[index].endTime - self.currentLevels[index].startTime).seconds})
+            newGame = {
+                "id": self.finished_games[len(self.finished_games) - 1]['id'] + 1,
+                "finished": True,
+                "levels":entries
+                }
+            with open(r"data.json", "r", encoding='utf-8') as file:
+                data = json.load(file)
+                data["games"].append(newGame)
+            with open(r"data.json", "w") as file:
+                json.dump(data, file, indent=4)
 
 
     def dataget(self): 
@@ -76,6 +81,7 @@ class DataAnalysis:
 
     def linreg(self): #linear regression of accuracy vs shots
         Accuracy_percent = [a * 100 for a in self.avg_accuracies]
+        #plt.figure(figsize=(self.width_inches, self.height_inches), dpi=self.dpi)
         plt.scatter(self.game_ids, Accuracy_percent, color='blue')
 
         slope, intercept, r_value, p_value, std_err = linregress(self.game_ids, self.avg_accuracies)
@@ -93,6 +99,7 @@ class DataAnalysis:
 
 
     def scatter(self): #scatter plot of how many rounds per level there were. use different colors per game id
+        #plt.figure(figsize=(self.width_inches, self.height_inches), dpi=self.dpi)
         color_cycle = plt.cm.get_cmap('tab10') #gets switching colors
         n_games = len(self.finished_games)
         for i, game in enumerate(self.finished_games):
