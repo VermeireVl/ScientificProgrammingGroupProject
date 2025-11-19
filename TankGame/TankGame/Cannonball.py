@@ -9,6 +9,8 @@ class Cannonball:
         self.screen = screen
         self.currentIndex = 0
         self.tankList = tankList
+        self.start_x = self.tankList[self.currentIndex].x
+        self.start_y = self.tankList[self.currentIndex].y
 
     def Shoot(self, angle: float, power: float, start_x: float = 0, start_y: float = 0):
         self.theta = math.radians(angle)
@@ -25,6 +27,30 @@ class Cannonball:
     def GetActive(self) -> bool:
         return self.active
 
+    def quadratic_bezier(self, p0, p1, p2, steps=10):
+        self.points = []
+        for i in range(steps + 1):
+            t = i / steps
+            x = (1-t)**2 * p0[0] + 2*(1-t)*t * p1[0] + t**2 * p2[0]
+            y = (1-t)**2 * p0[1] + 2*(1-t)*t * p1[1] + t**2 * p2[1]
+            self.points.append((int(x), int(y)))
+        return self.points
+
+    def UpdateStart(self):
+        self.start_x = self.tankList[self.currentIndex].x
+        self.start_y = self.tankList[self.currentIndex].y
+
+    def GetPointInArc(self, time: float, gravity: float = 9.81) -> list:
+        time = 3 * (time /1000)
+        x = self.start_x + self.power * math.cos(self.theta) * time
+        y = self.start_y - (self.power * math.sin(self.theta) * time - 0.5 * gravity * time**2)
+        return [x,y]
+
+    def SetPower(self, power: float):
+        self.power = power
+
+    def SetAngle(self, angle: float):
+        self.theta = math.radians(angle)
 
     def UpdatePointInArc(self, changedTime: float, gravity: float = 9.81) -> bool:
         # Calculate x and y positions
@@ -46,13 +72,15 @@ class Cannonball:
                     print("hit index: " + str(index))
                     if self.currentIndex >= len(self.tankList):
                         self.currentIndex = 0
+                    self.UpdateStart()
                     return True
 
         if self.PointInPolygon() or self.CircleEdgeCollision(self.levelGeometry) or self.InScreen():
             self.active = False
             self.currentIndex += 1
             if self.currentIndex >= len(self.tankList):
-                    self.currentIndex = 0
+                self.currentIndex = 0
+            self.UpdateStart()
             return False
 
         
