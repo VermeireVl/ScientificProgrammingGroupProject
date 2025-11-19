@@ -47,10 +47,12 @@ class Cannonball:
         return [x,y]
 
     def SetPower(self, power: float):
-        self.power = power
+        if not self.active:
+            self.power = power
 
     def SetAngle(self, angle: float):
-        self.theta = math.radians(angle)
+        if not self.active:
+            self.theta = math.radians(angle)
 
     def UpdatePointInArc(self, changedTime: float, gravity: float = 9.81) -> bool:
         # Calculate x and y positions

@@ -12,6 +12,9 @@ screen = pygame.display.set_mode((screenParam[0], screenParam[1]))
 ui_manager = pygame_gui.UIManager((screenParam[0], screenParam[1]))
 clock = pygame.time.Clock()
 
+font_size = int((screenParam[1] * 0.05))
+fontc = pygame.font.Font(None, font_size)
+
 running = True
 pos = [0,0]
 
@@ -143,6 +146,8 @@ while running:
     points = [(0,screenParam[1] * 0.95), (screenParam[0], screenParam[1] * 0.95), (screenParam[0], screenParam[1]), (0,screenParam[1])]
     pygame.draw.polygon(screen, (0,0,0), points, 0)
     ui_manager.draw_ui(screen)
+    counts = fontc.render("level: %d  shots: %d" % (dataAnaliser.currentLevels[len(dataAnaliser.currentLevels) - 1].levelId + 1, dataAnaliser.currentLevels[len(dataAnaliser.currentLevels) - 1].shots), True, (0, 0, 0))
+    screen.blit(counts, (0, 0.0))
 
     # flip() the display to put your work on screen
     pygame.display.flip()
