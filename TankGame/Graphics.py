@@ -24,7 +24,7 @@ TANK_HEIGHT = 30
 clock = pygame.time.Clock()
 
 
-
+        
 def draw_ground():
     pygame.draw.rect(
         screen,
