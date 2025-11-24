@@ -527,6 +527,18 @@
                     "match_time": 45
                 }
             ]
+        },
+        {
+            "id": 18,
+            "finished": true,
+            "levels": [
+                {
+                    "level": 0,
+                    "shots": 2,
+                    "misses": 1,
+                    "match_time": 28
+                }
+            ]
         }
     ]
 }

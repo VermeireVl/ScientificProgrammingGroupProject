@@ -1,7 +1,10 @@
 import Cannonball
+from Graphics import draw_cloud, draw_tank
 import Tank
 import DataAnalysis
 import pygame
+import Graphics
+import random
 
 import pygame_gui
 
@@ -23,6 +26,10 @@ frameLimit = 60
 
 RED = (255, 0, 0)
 GRAY = (200, 200, 200)
+BROWN = (120, 80, 40)
+GREEN = (0, 200, 0)
+BLUE = (0, 0, 200)
+WHITE= (255,255,255)
 
 #Power UI
 slider_label_power = pygame_gui.elements.UILabel(
@@ -79,14 +86,21 @@ levelGeometry = [(0,screenParam[1] * 0.8), (screenParam[0] * 0.3, screenParam[1]
                      (screenParam[0], screenParam[1] * 0.75), (screenParam[0],screenParam[1] * 0.95),
                      (0,screenParam[1] * 0.95)]
 
-tank0 = Tank.Tank(20,20,screenParam[0] * 0.1, screenParam[1] * 0.775, 0)
-tank1 = Tank.Tank(20,20, screenParam[0] * 0.9, screenParam[1] * 0.725, 1)
+tank0 = Tank.Tank(20,20,screenParam[0] * 0.1, screenParam[1] * 0.775, 0, GREEN)
+tank1 = Tank.Tank(20,20, screenParam[0] * 0.9, screenParam[1] * 0.725, 1, BLUE)
 tankList = [tank0, tank1]
 
 cannonball = Cannonball.Cannonball(levelGeometry, 5, screenParam, tankList)
 
 cannonball.SetPower(sliderPower.get_current_value())
 cannonball.SetAngle(sliderAngle.get_current_value())
+
+#Setting Up Clouds
+cloud_positions = [
+        [random.randint(0, screenParam[0]), random.randint(50, 200)],
+        [random.randint(0, screenParam[0]), random.randint(50, 200)],
+        [random.randint(0, screenParam[0]), random.randint(50, 200)]
+    ]
 
 #Prepping dataAnalysis part
 dataAnaliser = DataAnalysis.DataAnalysis(screenParam[0], screenParam[1])
@@ -119,20 +133,23 @@ while running:
                     dataAnaliser.AddShot()
                     cannonball.Shoot(float(sliderAngle.get_current_value()), float(sliderPower.get_current_value()))
             if event.ui_element == statButton:
-                dataAnaliser.linreg()
-                dataAnaliser.scatter()
+                #dataAnaliser.linreg()
+                #dataAnaliser.scatter()
+                dataAnaliser.combined_stats()
 
 
     # Update the UI
     ui_manager.update(1/frameLimit)  # Delta time (e.g., 1/60 for 60 FPS)
     
     # fill the screen with a color to wipe away anything from last frame
-    screen.fill("white")
+    screen.fill("lightblue")
 
     # RENDER YOUR GAME HERE
-    pygame.draw.polygon(screen, (0,60,128), levelGeometry, 0)
+    pygame.draw.polygon(screen, BROWN, levelGeometry, 0)
+    for cloud in cloud_positions:
+        draw_cloud(cloud[0], cloud[1], screen)
     for tank in tankList:
-        pygame.draw.rect(screen, (0,0,0), (tank.x, tank.y, tank.width,tank.height))
+        draw_tank(tank.x, tank.y, tank.color, screen)
     
     if cannonball.GetActive():
         if cannonball.UpdatePointInArc(clock.get_time()):
