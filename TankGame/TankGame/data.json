@@ -539,6 +539,60 @@
                     "match_time": 28
                 }
             ]
+        },
+        {
+            "id": 19,
+            "finished": true,
+            "levels": [
+                {
+                    "level": 0,
+                    "shots": 2,
+                    "misses": 1,
+                    "match_time": 26
+                }
+            ]
+        },
+        {
+            "id": 20,
+            "finished": true,
+            "levels": [
+                {
+                    "level": 0,
+                    "shots": 5,
+                    "misses": 4,
+                    "match_time": 46
+                }
+            ]
+        },
+        {
+            "id": 21,
+            "finished": true,
+            "levels": [
+                {
+                    "level": 0,
+                    "shots": 3,
+                    "misses": 2,
+                    "match_time": 18
+                },
+                {
+                    "level": 1,
+                    "shots": 10,
+                    "misses": 9,
+                    "match_time": 49
+                },
+                {
+                    "level": 2,
+                    "shots": 4,
+                    "misses": 3,
+                    "match_time": 16
+                },
+                {
+                    "level": 3,
+                    "shots": 2,
+                    "misses": 1,
+                    "match_time": 17
+                }
+            ]
         }
     ]
 }

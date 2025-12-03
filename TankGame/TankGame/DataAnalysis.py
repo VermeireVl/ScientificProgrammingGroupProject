@@ -37,7 +37,9 @@ class DataAnalysis:
             self.finished_games[len(self.finished_games) - 1]['id']
             entries = []
             for index in range(len(self.currentLevels) -1 ):
-                entries.append({"level": self.currentLevels[index].levelId, "shots": self.currentLevels[index].shots, "misses": self.currentLevels[index].misses, "match_time": (self.currentLevels[index].endTime - self.currentLevels[index].startTime).seconds})
+                entries.append({"level": self.currentLevels[index].levelId, "shots": self.currentLevels[index].shots, 
+                                "misses": self.currentLevels[index].misses, "match_time": (self.currentLevels[index].endTime - 
+                                                                                           self.currentLevels[index].startTime).seconds})
             newGame = {
                 "id": self.finished_games[len(self.finished_games) - 1]['id'] + 1,
                 "finished": True,

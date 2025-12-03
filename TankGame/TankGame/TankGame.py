@@ -5,7 +5,6 @@ import DataAnalysis
 import pygame
 import Graphics
 import random
-
 import pygame_gui
 
 # pygame setup
@@ -86,8 +85,8 @@ levelGeometry = [(0,screenParam[1] * 0.8), (screenParam[0] * 0.3, screenParam[1]
                      (screenParam[0], screenParam[1] * 0.75), (screenParam[0],screenParam[1] * 0.95),
                      (0,screenParam[1] * 0.95)]
 
-tank0 = Tank.Tank(20,20,screenParam[0] * 0.1, screenParam[1] * 0.775, 0, GREEN)
-tank1 = Tank.Tank(20,20, screenParam[0] * 0.9, screenParam[1] * 0.725, 1, BLUE)
+tank0 = Tank.Tank(50,20,screenParam[0] * 0.1, screenParam[1] * 0.775, 0, GREEN)
+tank1 = Tank.Tank(50,20, screenParam[0] * 0.9, screenParam[1] * 0.725, 1, BLUE)
 tankList = [tank0, tank1]
 
 cannonball = Cannonball.Cannonball(levelGeometry, 5, screenParam, tankList)
@@ -133,8 +132,6 @@ while running:
                     dataAnaliser.AddShot()
                     cannonball.Shoot(float(sliderAngle.get_current_value()), float(sliderPower.get_current_value()))
             if event.ui_element == statButton:
-                #dataAnaliser.linreg()
-                #dataAnaliser.scatter()
                 dataAnaliser.combined_stats()
 
 

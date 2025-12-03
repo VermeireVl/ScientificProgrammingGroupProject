@@ -27,15 +27,6 @@ class Cannonball:
     def GetActive(self) -> bool:
         return self.active
 
-    def quadratic_bezier(self, p0, p1, p2, steps=10):
-        self.points = []
-        for i in range(steps + 1):
-            t = i / steps
-            x = (1-t)**2 * p0[0] + 2*(1-t)*t * p1[0] + t**2 * p2[0]
-            y = (1-t)**2 * p0[1] + 2*(1-t)*t * p1[1] + t**2 * p2[1]
-            self.points.append((int(x), int(y)))
-        return self.points
-
     def UpdateStart(self):
         self.start_x = self.tankList[self.currentIndex].x
         self.start_y = self.tankList[self.currentIndex].y
